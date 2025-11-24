@@ -1,4 +1,4 @@
-name: Deploy index.html to S3 and Notif
+name: Deploy index.html to S3 and Notify
 
 
 on:
