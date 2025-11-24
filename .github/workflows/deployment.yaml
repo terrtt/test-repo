@@ -1,0 +1,69 @@
+name: Deploy to S3 Static Website and Notify
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 3. Upload repo to S3
+      -  name: Upload only index.html to S3 bucket
+         run: |
+            aws s3 cp index.html s3://${{ secrets.S3_BUCKET }}/index.html --acl public-read
+
+
+      # 4. Make bucket public
+      - name: Make S3 bucket public
+        run: |
+          aws s3api put-bucket-policy \
+          --bucket ${{ secrets.S3_BUCKET }} \
+          --policy "{
+            \"Version\": \"2012-10-17\",
+            \"Statement\": [
+              {
+                \"Sid\": \"PublicReadGetObject\",
+                \"Effect\": \"Allow\",
+                \"Principal\": \"*\",
+                \"Action\": \"s3:GetObject\",
+                \"Resource\": \"arn:aws:s3:::${{ secrets.S3_BUCKET }}/*\"
+              }
+            ]
+          }"
+
+      # 5. Enable static hosting
+      - name: Enable S3 Website Hosting
+        run: |
+          aws s3 website s3://${{ secrets.S3_BUCKET }} \
+            --index-document index.html \
+            --error-document error.html
+
+      # 6. Compute website URL
+      - name: Compute Website URL
+        id: website
+        run: |
+          echo "url=http://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+
+      - name: Print URL
+        run: echo "Website: ${{ steps.website.outputs.url }}"
+
+      # 7. POST the URL to your public HTTP endpoint
+      - name: Post URL to External Service
+        run: |
+          curl -X POST ${{ secrets.WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d "{\"website_url\": \"${{ steps.website.outputs.url }}\"}"
