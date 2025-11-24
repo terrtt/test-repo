@@ -56,7 +56,7 @@ jobs:
       - name: Compute Website URL
         id: website
         run: |
-          echo "url=http://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+          echo "url=https://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
 
       - name: Print URL
         run: echo "Website: ${{ steps.website.outputs.url }}"
@@ -64,6 +64,6 @@ jobs:
       # 7. POST the URL to your public HTTP endpoint
       - name: Post URL to External Service
         run: |
-          curl -X POST ${{ secrets.WEBHOOK_URL }} \
+          curl -X POST  https://lethally-pierceable-shenna.ngrok-free.dev \
             -H "Content-Type: application/json" \
             -d "{\"website_url\": \"${{ steps.website.outputs.url }}\"}"
