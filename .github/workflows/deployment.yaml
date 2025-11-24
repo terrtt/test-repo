@@ -72,6 +72,7 @@ jobs:
 
       - name: Post URL to External Service
         run: |
-          curl -X POST https://lethally-pierceable-shenna.ngrok-free.dev  \
-            -H "Content-Type: application/json" \
-            -d "{\"website_url\": \"${{ steps.website.outputs.url }}\"}"
+          curl -X POST "https://lethally-pierceable-shenna.ngrok-free.dev/api/deployment-url" \
+          -H "Content-Type: application/json" \
+          -d "{\"deployedUrl\": \"${{ steps.website.outputs.url }}\"}"
+
