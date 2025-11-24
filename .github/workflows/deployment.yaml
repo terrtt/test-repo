@@ -65,7 +65,7 @@ jobs:
       - name: Compute Website URL
         id: website
         run: |
-          echo "url=http://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+          echo "url=https://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
 
       - name: Print URL
         run: echo "Website URL:${{ steps.website.outputs.url }}"
