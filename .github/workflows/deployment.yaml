@@ -65,14 +65,14 @@ jobs:
       - name: Compute Website URL
         id: website
         run: |
-          echo "url=https://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
+          echo "url=http://${{ secrets.S3_BUCKET }}.s3-website-${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
 
       - name: Print URL
         run: echo "Website URL:${{ steps.website.outputs.url }}"
 
       - name: Post URL to External Service
         run: |
-          curl -X POST "https://lethally-pierceable-shenna.ngrok-free.dev/api/deployment-url" \
+          curl -X POST "http://lethally-pierceable-shenna.ngrok-free.dev/api/deployment-url" \
           -H "Content-Type: application/json" \
           -d "{\"deployedUrl\": \"${{ steps.website.outputs.url }}\"}"
 
