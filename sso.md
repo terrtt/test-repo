@@ -3,7 +3,6 @@
 ## 1. Users in Linux
 
 A **user** is an account that can log in and use the system.
-
 ### Types of Users
 
 * **Root User (UID 0):** Has complete control over the system.
